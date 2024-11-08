@@ -118,23 +118,25 @@ int open_udp_socket(int *pong_port)
 		sprintf(port_number_as_str, "%d", port_number);
 /*** TO BE DONE START ***/
 
-	//ricavo l'addrinfo
-	gai_rv = getaddrinfo( NULL, port_number_as_str, &gai_hints, &pong_addrinfo);
-	if(gai_rv!=0) fail_errno("FAIL to: call getaddrinfo() in order to get Pong Server address in binary form");
-
 	//creao l'UDP socket
 	udp_socket = socket(gai_hints.ai_family, gai_hints.ai_socktype, gai_hints.ai_protocol);
 	if(udp_socket==-1) fail_errno("FAIL to: create a new UDP socket");
 
+	//ricavo l'addrinfo
+		gai_rv = getaddrinfo( NULL, port_number_as_str, &gai_hints, &pong_addrinfo);
+		if(gai_rv!=0) fail_errno("FAIL to: call getaddrinfo() in order to get Pong Server address in binary form");
+
 	//effettuo la bind
 	bind_rv = bind(udp_socket, pong_addrinfo->ai_addr, pong_addrinfo->ai_addrlen);
+	
+	//libero la struct addrinfo
+	freeaddrinfo(pong_addrinfo);
+
+	//se la bind va a buon fine salvo la porta e ritorno il socket come richiesto da funzione
 	if(bind_rv==0) {
 		*pong_port=port_number;
 		return udp_socket;
 	}
-
-	//libero la struct addrinfo
-	freeaddrinfo(pong_addrinfo);
 
 /*** TO BE DONE END ***/
 		if (errno != EADDRINUSE) 
@@ -281,7 +283,19 @@ int main(int argc, char **argv)
 
 /*** TO BE DONE START ***/
 
-	
+	//initialize server_socket
+	server_socket = socket(gai_hints.ai_family, gai_hints.ai_socktype, gai_hints.ai_protocol);
+	if(server_socket==-1) fail_errno("FAIL to: initialize a server_socket");
+
+	//ricavo l'addrinfo
+	gai_rv = getaddrinfo(NULL, argv[1], &gai_hints, &server_addrinfo);
+	if(gai_rv!=0) fail_errno("FAIL to: call getaddrinfo() in order to get Pong Server address in binary form");
+
+	//bind 
+	if(bind(server_socket, server_addrinfo->ai_addr, server_addrinfo->ai_addrlen)!=0) fail_errno("FAIL to: bind in the main");
+
+	//listen per permettere al socket di essere in modalità di ascolto
+	if(listen(server_socket, SOMAXCONN)==-1) fail_errno("FAIL to: listen");	
 
 /*** TO BE DONE END ***/
 
