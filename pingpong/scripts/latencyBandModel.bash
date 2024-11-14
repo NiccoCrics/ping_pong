@@ -15,6 +15,21 @@ LastN=${TailLine[0]}
 
 # TO BE DONE START
 
+  FirstT=${HeadLine[1]}
+  LastT=${TailLine[1]}
+
+  FirstN=$(printf "%.10f" $FirstN)
+  LastN=$(printf "%.10f" $LastN)
+  FirstT=$(printf "%.10f" $FirstT)
+  LastT=$(printf "%.10f" $LastT)
+
+  DelayFirst=$(echo "scale=10; $FirstN / $FirstT" | bc)
+  DelayLast=$(echo "scale=10; $LastN / $LastT" | bc)
+
+
+  Band=$(echo "scale=10; ($LastN - $FirstN) / ($DelayLast - $DelayFirst)" | bc )
+
+  Latency=$(echo "scale=10; ($DelayFirst * $LastN - $DelayLast * $FirstN) / ($LastN - $FirstN)" | bc)
 
 # TO BE DONE END
 
@@ -31,6 +46,9 @@ gnuplot <<-eNDgNUPLOTcOMMAND
   lbmodel(x)= x / ($Latency + (x/$Band))
 
 # TO BE DONE START
+
+  plot "${ThroughFile}" using 1:2 title "Measured Throughput" with points, \
+       lbmodel(x) title "Latency-Bandwidth Model" with lines
 
 # TO BE DONE END
 
