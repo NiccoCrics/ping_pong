@@ -3,7 +3,7 @@
 
 # Define input and output file names
 ThroughFile="../data/$1_throughput.dat";
-PngName="../data/LB$1.png";
+PngName="../data/LB$1"Final".png";
 
 #getting the first and the last line of the file
 HeadLine=($(head $ThroughFile --lines=1))
@@ -47,8 +47,8 @@ gnuplot <<-eNDgNUPLOTcOMMAND
 
 # TO BE DONE START
 
-  plot "${ThroughFile}" using 1:2 title "Measured Throughput" with points, \
-       lbmodel(x) title "Latency-Bandwidth Model" with lines
+  plot "${ThroughFile}" using 1:2 title "Measured Throughput" with linespoints, \
+       lbmodel(x) title "Latency-Bandwidth Model" with linespoints
 
 # TO BE DONE END
 
